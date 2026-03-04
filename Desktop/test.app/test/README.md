@@ -1,50 +1,67 @@
-# 🌱 Hygrothermal Digital Twin: Seed Mechanics & Material Stability
+# 🌱 Unified PhD Research Hub: Seed Mechanics & AI Agriculture Suite
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/) 
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Architecture-4.0](https://img.shields.io/badge/Industry-4.0-green)
 
-This project is a professional **Proof-of-Concept Digital Twin** developed for the PhD interview process at the **Poznań University of Life Sciences (Faculty of Environmental and Mechanical Engineering)**. 
+This platform is a **Unified PhD Research Hub** developed for the PhD interview process at the **Poznań University of Life Sciences (Faculty of Environmental and Mechanical Engineering)**. 
 
-The demonstration bridges the gap between **Plant Genetics** and **Computational Mechanics**, specifically aligning with the research of **Prof. Tomasz Garbowski** and **Prof. Anna Maria Szymczak-Graczyk**.
-
----
-
-## 🔬 Scientific Context: The Research Bridge
-
-This project focuses on the **Hygrothermal Performance** of biological materials. In structural engineering and building diagnostics, understanding moisture diffusion and mechanical homogenization is critical. This tool applies those same engineering principles to **Seed Quality Control**.
-
-### Key Concept: The Surrogate Model
-Traditional **Finite Element Method (FEM)** simulations are accurate but computationally expensive (taking hours/days). This project demonstrates the use of **Artificial Neural Networks (ANN)** as "Surrogate Models" that:
-1.  Learn the non-linear physics of anisotropic diffusion.
-2.  Provide real-time structural stability predictions (<1ms).
-3.  Enable immediate intervention in smart agricultural storage systems (Agriculture 4.0).
+The project bridges the gap between **Computational Mechanics** (Prof. Tomasz Garbowski and Prof. Anna Maria Szymczak-Graczyk) and **Agricultural Biosystems**, demonstrating a holistic approach to Agriculture 4.0.
 
 ---
 
-## 🎨 Professional Dashboard Features
-The interactive **Streamlit Dashboard** provides a premium, "wow-factor" visualization of the Digital Twin:
-- **Premium UI**: Custom "Agriculture 4.0" dark theme with neon accents.
-- **Real-Time Sliders**: Control **Relative Humidity (Vapor Diffusion)**, **Temperature**, and **Mechanical Loading (kPa)**.
-- **Dynamic Gauges**: Real-time structural integrity indicators powered by a trained MLPRegressor.
-- **Latency Tracking**: Displays the speed advantage of Machine Learning over traditional numerical methods.
+## 🔬 Project Pillars & Core Modules
+
+### 1. Material Mechanics (The Digital Twin)
+The flagship module of the hub, focusing on the **Hygrothermal Performance** of biological materials.
+*   **Surrogate Modeling**: Translates complex, high-latency Finite Element Method (FEM) simulations into high-speed **Artificial Neural Network (ANN)** models.
+*   **Real-Time stability Analysis**: Predictive modeling of moisture diffusion and mechanical stability under varying loads.
+*   **3D Stability Landscape**: Interactive visualizations of the material's response across the entire hygrothermal spectrum.
+
+### 2. Research Productivity (AI Assistant & Diagnostics)
+Integrating modern AI tools to enhance research efficiency and Human-Machine Interaction (HMI).
+*   **AgriBot Assistant**: A specialized NLP-driven chatbot for instant agricultural guidance and research query handling.
+*   **Disease Detective**: AI Computer Vision simulation for early-stage diagnostic monitoring of material/plant health.
+
+### 3. Crop Logistics (Applied Decision Support)
+Translating theoretical mechanics into actionable field logistics.
+*   **Yield Predictor**: Multi-variable regression modeling for crop optimization.
+*   **Smart Irrigation**: Resource-aware water management advisor based on real-time environmental data.
 
 ---
 
-## 📁 Project Architecture
-- `app.py`: The premium Streamlit dashboard and main entry point.
-- `data_simulator.py`: Logic for generating scientific training data based on non-linear hygrothermal degradation.
-- `surrogate_model.py`: Multi-Layer Perceptron (ANN) training pipeline with standardized scaling.
-- `requirements.txt`: Exact dependency versions for reproducible research cloud deployment.
+## 📚 Scientific Foundations & Equations
+
+This project is built upon rigorous mathematical and biological foundations:
+- **Ellis-Roberts Longevity Equations**: The gold standard for predicting seed viability over time.
+- **Harrington’s Rule of Thumb**: For safe storage temperature and humidity interaction.
+- **Arrhenius-inspired Diffusion Models**: To simulate moisture ingress during environmental cycles.
+- **Inverse Analysis**: Implicitly used to determine material homogenization through surrogate mapping.
 
 ---
 
-## 🚀 Installation & Local Execution
+## 🛠️ Technical Architecture & Stack
+
+- **Dashboard Framework**: [Streamlit](https://streamlit.io/) (Premium multi-page navigation)
+- **Machine Learning**: Scikit-Learn (MLP Regressors, Random Forests)
+- **Data Visualization**: [Plotly](https://plotly.com/) (Interactive 3D surfaces and Gauges)
+- **Computational Core**: NumPy & SciPy (Physics-informed logic)
+- **Image Processing**: Pillow (Diagnostics simulation)
+
+### Project Layout
+- `pages/`: Interactive modules (Dashboard, AgriBot, Logistics, etc.)
+- `src/research_suite/`: Core logic for the unified AI modules.
+- `src/seed_science.py`: Implementation of scientific equations.
+- `config.py`: Centralized research constants and seed-type definitions.
+
+---
+
+## 🚀 Installation & Execution
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/iffat336/seed-digital-twin-demo.git
-   cd seed-digital-twin-demo
+   git clone https://github.com/iffat336/AI_Agriculture_Suite-.git
+   cd AI_Agriculture_Suite-
    ```
 
 2. **Install Dependencies**:
@@ -52,13 +69,7 @@ The interactive **Streamlit Dashboard** provides a premium, "wow-factor" visuali
    pip install -r requirements.txt
    ```
 
-3. **Train the Surrogate Model** (Optional, models are pre-included):
-   ```bash
-   python data_simulator.py
-   python surrogate_model.py
-   ```
-
-4. **Launch the Dashboard**:
+3. **Launch the Hub**:
    ```bash
    streamlit run app.py
    ```
@@ -66,10 +77,11 @@ The interactive **Streamlit Dashboard** provides a premium, "wow-factor" visuali
 ---
 
 ## 🎓 PhD Candidate Value Proposition
+
 As a researcher, this project demonstrates my readiness to:
-*   Deploy **Machine Learning** to solve bottlenecks in **Computational Mechanics**.
-*   Process and simulate complex, multi-variable **Material Characterization** data.
-*   Communicate sophisticated engineering concepts through **Interactive Data Visualization**.
+*   **Master Surrogate Modeling**: Solve computational bottlenecks in **Computational Mechanics**.
+*   **Design Interdisciplinary Architectures**: Bridge engineering with AI and Biology.
+*   **Deploy Professional Research Tools**: Communicate sophisticated concepts through premium visualization and interactive software.
 
 ---
-*Developed by **Iffat Nazir** - Bridging Plant Science and Civil Engineering through AI.*
+*Developed by **Iffat Nazir** - Bridging Computational Mechanics and Agriculture 4.0.*

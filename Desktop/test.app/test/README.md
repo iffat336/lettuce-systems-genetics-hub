@@ -23,10 +23,11 @@ Integrating modern AI tools to enhance research efficiency and Human-Machine Int
 *   **AgriBot Assistant**: A specialized NLP-driven chatbot for instant agricultural guidance and research query handling.
 *   **Disease Detective**: AI Computer Vision simulation for early-stage diagnostic monitoring of material/plant health.
 
-### 3. Crop Logistics (Applied Decision Support)
-Translating theoretical mechanics into actionable field logistics.
-*   **Yield Predictor**: Multi-variable regression modeling for crop optimization.
-*   **Smart Irrigation**: Resource-aware water management advisor based on real-time environmental data.
+### 3. Urban Dynamics (Computational Urban Mechanics)
+Translating multiscale material laws to urban complexity.
+*   **Multiscale Homogenization**: Mapping micro-scale building material properties (anisotropy/porosity) to macro-scale urban thermal and mechanical stability.
+*   **Inverse Analysis Loop**: A simulated solver for predicting unobservable material parameters from sensor data, utilizing convergence-based optimization.
+*   **Stress/Strain Landscapes**: 3D visualizations of homogenized stress distribution across an urban grid.
 
 ---
 

@@ -31,6 +31,21 @@ Translating multiscale material laws to urban complexity.
 
 ---
 
+## 🔬 Scientific Methodology Summary
+
+The platform operates on a **Physics-Informed Data-Driven (PIDD)** architecture:
+
+### 1. The Inverse Problem Solver
+Traditional engineering models move from "Cause → Effect." This hub demonstrates **Inverse Analysis**, where observed environmental data (Climate/Terrain) is used as an input to back-calculate the hidden state of material health and structural integrity.
+
+### 2. Multi-Scale Homogenization
+Rather than modeling individual grains or soil particles, the hub utilizes **Representative Volume Elements (RVE)** logic to homogenize micro-scale voids and density into macro-scale mechanical stiffness (E-Modulus).
+
+### 3. ANN Surrogate Benchmarking
+To overcome the computational cost of non-linear FEA, the project implements **Artificial Neural Network (ANN) Surrogates**. These solvers provide instant mechanical predictions (<0.8ms), enabling the real-time "Digital Twin" experience necessary for modern Industry 4.0 applications.
+
+---
+
 ## 📚 Scientific Foundations & Equations
 
 This project is built upon rigorous mathematical and biological foundations:

@@ -113,6 +113,14 @@ with col_analysis:
     chart_data = pd.DataFrame({"Iteration": steps, "Relative Error": loss})
     st.line_chart(chart_data, x="Iteration", y="Relative Error", use_container_width=True)
     
+    # ADDED SCOPE: Stress-Strain Curve
+    st.markdown("**Constitutive Research Model**")
+    strain_arr = np.linspace(0, 0.02, 50)
+    stress_arr = 500 * (1 - np.exp(-150 * strain_arr))
+    fig_ss_int = px.line(x=strain_arr, y=stress_arr, labels={'x': 'Strain', 'y': 'Stress'})
+    fig_ss_int.update_layout(template="plotly_dark", height=250, margin=dict(l=0,r=0,b=0,t=10))
+    st.plotly_chart(fig_ss_int, use_container_width=True)
+    
     st.markdown("""
     **Computational Methodology:**
     - **Forward Model**: Surrogate-based simulation of anisotropic diffusion.

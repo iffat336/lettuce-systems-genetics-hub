@@ -99,5 +99,11 @@ As a researcher, this project demonstrates my readiness to:
 *   **Design Interdisciplinary Architectures**: Bridge engineering with AI and Biology.
 *   **Deploy Professional Research Tools**: Communicate sophisticated concepts through premium visualization and interactive software.
 
+## 🧬 Future PhD Research Roadmap
+This hub is designed as an extensible research framework for future expansion:
+1. **Dynamic Soil Homogenization**: Integrating real-time sensor loops to update material matrices autonomously.
+2. **Structural Survival Probabilities**: Moving from deterministic stability scores to stochastic (probabilistic) failure modeling.
+3. **Advanced HMI**: Developing VR/AR-ready Digital Twins for immersive urban and agricultural structural inspections.
+
 ---
 *Developed by **Iffat Nazir** - Bridging Computational Mechanics and Agriculture 4.0.*

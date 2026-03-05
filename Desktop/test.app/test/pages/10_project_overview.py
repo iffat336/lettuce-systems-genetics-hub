@@ -66,5 +66,6 @@ st.dataframe(data.causal_map, use_container_width=True)
 
 st.info(
     "Interview talking point: you can explain that this synthetic dataset represents "
-    "the same workflow you would apply to real lettuce RIL/introgression data."
+    "the same workflow you would apply to real lettuce RIL/introgression data, while "
+    "remaining conceptually consistent with Arabidopsis and C. elegans systems-genetics studies."
 )

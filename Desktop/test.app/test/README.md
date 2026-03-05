@@ -6,6 +6,7 @@ Streamlit project for PhD interview discussions around:
 - eQTL mapping
 - Network biology
 - AI-assisted trait prediction
+- Transferable systems-genetics logic from Arabidopsis/C. elegans to lettuce
 
 ## Modules
 - `Project Overview`: synthetic lettuce genotype-expression-phenotype dataset

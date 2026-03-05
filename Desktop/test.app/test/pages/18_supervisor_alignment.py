@@ -10,6 +10,7 @@ st.markdown(
 - Genetic and phenotypic variation across individuals
 - High-throughput omics (RNA-seq) and large-scale computational analysis
 - Genetical genomics and systems genetics (eQTL, regulatory loci, networks)
+- Model-system grounding in Arabidopsis and C. elegans for mechanism discovery
 - Multi-environment expression analysis in lettuce populations
 - Future direction: integrate genetics of expression with meta-biome sequencing
 """
@@ -28,9 +29,10 @@ st.markdown(
     """
 1. eQTL and GxE modules map regulatory loci and environment-dependent effects.
 2. Network module supports systems-level interpretation and hub prioritization.
-3. AI module supports predictive ranking with interpretable feature importance.
-4. Meta-biome module supports future host-microbiome integration goals.
-5. Reproducible pipeline design supports fast iteration across supervisors.
+3. The workflow is transferable from Arabidopsis/C. elegans-style genetical genomics logic to lettuce populations.
+4. AI module supports predictive ranking with interpretable feature importance.
+5. Meta-biome module supports future host-microbiome integration goals.
+6. Reproducible pipeline design supports fast iteration across supervisors.
 """
 )
 

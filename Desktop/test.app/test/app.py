@@ -1,10 +1,5 @@
-"""Lettuce Systems Genetics Hub - Streamlit multipage entrypoint."""
-from pathlib import Path
-import sys
-
+"""Landing page for Lettuce Systems Genetics Hub."""
 import streamlit as st
-
-sys.path.insert(0, str(Path(__file__).parent))
 
 st.set_page_config(
     page_title="Lettuce Systems Genetics Hub",
@@ -12,21 +7,24 @@ st.set_page_config(
     layout="wide",
 )
 
-overview = st.Page("pages/10_project_overview.py", title="Project Overview", icon=":material/home:")
-eqtl = st.Page("pages/11_eqtl_explorer.py", title="eQTL Explorer", icon=":material/query_stats:")
-network = st.Page("pages/12_network_biology.py", title="Network Biology", icon=":material/hub:")
-ai = st.Page("pages/13_ai_trait_predictor.py", title="AI Trait Predictor", icon=":material/psychology:")
-methods = st.Page("pages/14_methods_reproducibility.py", title="Methods", icon=":material/lab_profile:")
-gxe = st.Page("pages/15_gxe_systems_genetics.py", title="GxE Systems Genetics", icon=":material/lan:")
-microbiome = st.Page("pages/16_meta_biome_integration.py", title="Meta-Biome Integration", icon=":material/biotech:")
-fit = st.Page("pages/17_lab_fit_pain_points.py", title="Lab Fit and Pain Points", icon=":material/handshake:")
+st.title("Lettuce Systems Genetics Hub")
+st.caption("PhD interview demo: systems genetics, network biology, and meta-biome integration")
 
-navigation = st.navigation(
-    {
-        "Research Scope": [overview],
-        "Analysis Modules": [eqtl, network, ai, gxe, microbiome],
-        "Project Fit": [methods, fit],
-    }
+st.markdown(
+    """
+Use the left sidebar to open pages:
+
+1. Project Overview
+2. eQTL Explorer
+3. Network Biology
+4. AI Trait Predictor
+5. GxE Systems Genetics
+6. Meta-Biome Integration
+7. Methods
+8. Lab Fit and Pain Points
+"""
 )
 
-navigation.run()
+st.info(
+    "If pages are not visible, verify Streamlit Cloud main file path and ensure this app runs from the project folder."
+)

@@ -15,6 +15,7 @@ Streamlit project for PhD interview discussions around:
 - `GxE Systems Genetics`: environment-specific regulatory effects
 - `Meta-Biome Integration`: species abundance and host-microbiome links
 - `Lab Fit and Pain Points`: explicit contribution plan for PhD lab fit
+- `Supervisor Alignment`: bio/profile links and direct fit to supervision goals
 - `Methods`: reproducibility and project-fit notes
 
 ## Local Run

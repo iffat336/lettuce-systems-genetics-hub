@@ -6,12 +6,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.lettuce_project.core import generate_synthetic_multiomics
-
-
-@st.cache_data
-def load_data(seed: int):
-    return generate_synthetic_multiomics(seed=seed)
+from src.lettuce_project.workflow_io import get_active_or_synthetic
 
 
 st.title("Lettuce Systems Genetics Hub")
@@ -21,7 +16,8 @@ with st.sidebar:
     st.header("Dataset setup")
     seed = st.number_input("Random seed", min_value=1, max_value=9999, value=42, step=1)
 
-data = load_data(seed)
+data, source = get_active_or_synthetic(seed=seed)
+st.info(f"Active data source: {source}")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Samples", data.genotype.shape[0])
@@ -32,6 +28,11 @@ col4.metric("Habitats", data.metadata["habitat"].nunique())
 col5, col6 = st.columns(2)
 col5.metric("Population designs", data.metadata["population"].nunique())
 col6.metric("Microbial species", data.microbiome.shape[1])
+
+if "photosynthesis_efficiency_index" in data.metadata.columns and "zinc_homeostasis_index" in data.metadata.columns:
+    col7, col8 = st.columns(2)
+    col7.metric("Mean photosynthesis index", f"{data.metadata['photosynthesis_efficiency_index'].mean():.2f}")
+    col8.metric("Mean zinc-homeostasis index", f"{data.metadata['zinc_homeostasis_index'].mean():.2f}")
 
 st.markdown(
     """

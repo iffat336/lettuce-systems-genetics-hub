@@ -8,18 +8,10 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.lettuce_project.core import (
-    generate_synthetic_multiomics,
     run_environment_eqtl_scan,
     summarize_eqtl_stability,
 )
-
-
-@st.cache_data
-def load_env_eqtl(seed: int):
-    data = generate_synthetic_multiomics(seed=seed)
-    env_eqtl = run_environment_eqtl_scan(data.genotype, data.expression, data.metadata)
-    stability = summarize_eqtl_stability(env_eqtl)
-    return data, env_eqtl, stability
+from src.lettuce_project.workflow_io import get_active_or_synthetic
 
 
 st.title("GxE Systems Genetics")
@@ -29,7 +21,10 @@ with st.sidebar:
     seed = st.number_input("Random seed", min_value=1, max_value=9999, value=42, step=1)
     top_n = st.slider("Top stable eQTLs", 10, 80, 25, 5)
 
-data, env_eqtl, stability = load_env_eqtl(seed)
+data, source = get_active_or_synthetic(seed=seed)
+st.info(f"Active data source: {source}")
+env_eqtl = run_environment_eqtl_scan(data.genotype, data.expression, data.metadata)
+stability = summarize_eqtl_stability(env_eqtl)
 
 if env_eqtl.empty or stability.empty:
     st.warning("No environment-specific associations found for this seed.")

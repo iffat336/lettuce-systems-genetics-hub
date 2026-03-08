@@ -10,22 +10,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.lettuce_project.core import (
     build_coexpression_edges,
-    generate_synthetic_multiomics,
     summarize_network,
 )
-
-
-@st.cache_data
-def load_data(seed: int):
-    return generate_synthetic_multiomics(seed=seed)
-
-
-@st.cache_data
-def build_network(seed: int, threshold: float):
-    data = generate_synthetic_multiomics(seed=seed)
-    edges = build_coexpression_edges(data.expression, threshold=threshold)
-    degree_table = summarize_network(edges, data.expression.columns.tolist())
-    return edges, degree_table, data.expression.columns.tolist()
+from src.lettuce_project.workflow_io import get_active_or_synthetic
 
 
 st.title("Network Biology")
@@ -36,8 +23,11 @@ with st.sidebar:
     threshold = st.slider("Absolute correlation threshold", 0.30, 0.90, 0.65, 0.05)
     top_hubs = st.slider("Hub genes shown", 5, 20, 10, 1)
 
-data = load_data(seed)
-edges, degree_table, genes = build_network(seed, threshold)
+data, source = get_active_or_synthetic(seed=seed)
+st.info(f"Active data source: {source}")
+edges = build_coexpression_edges(data.expression, threshold=threshold)
+degree_table = summarize_network(edges, data.expression.columns.tolist())
+genes = data.expression.columns.tolist()
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Genes", len(genes))

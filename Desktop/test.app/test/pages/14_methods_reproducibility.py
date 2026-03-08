@@ -22,8 +22,11 @@ st.markdown(
 5. Host-microbiome integration
    - Host gene vs species abundance links.
 6. AI prediction
-   - Trait modeling from transcript profiles.
+   - Trait modeling from transcript profiles (stress, photosynthesis, zinc homeostasis).
    - Importance-based interpretation and feedback to biology.
+7. Workflow portability
+   - Upload external bundles (`genotype/expression/metadata/microbiome`) and rerun all analyses.
+   - Download full reproducibility package with all derived outputs.
 """
 )
 

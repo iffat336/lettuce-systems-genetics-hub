@@ -92,6 +92,32 @@ def generate_synthetic_multiomics(
         microbiome_matrix.append(comp)
     microbiome_df = pd.DataFrame(microbiome_matrix, columns=species_names, index=sample_ids)
 
+    # Additional trait targets to support supervisor-aligned discussions.
+    photo_gene = expression_df.columns[min(1, n_genes - 1)]
+    zinc_gene_up = expression_df.columns[min(4, n_genes - 1)]
+    zinc_gene_down = expression_df.columns[min(13, n_genes - 1)]
+    photo_snp = genotype_df.columns[min(8, n_snps - 1)]
+    zinc_snp = genotype_df.columns[min(19, n_snps - 1)]
+    zinc_microbe = microbiome_df.columns[min(2, len(species_names) - 1)]
+
+    photosynthesis_index = (
+        50.0
+        + 1.8 * expression_df[photo_gene]
+        - 1.2 * (metadata_df["habitat"] == "drought_stress").astype(float)
+        + 0.35 * genotype_df[photo_snp]
+        + rng.normal(0, 1.0, n_samples)
+    )
+    zinc_homeostasis_index = (
+        48.0
+        + 1.4 * expression_df[zinc_gene_up]
+        - 1.1 * expression_df[zinc_gene_down]
+        + 0.4 * genotype_df[zinc_snp]
+        + 8.0 * microbiome_df[zinc_microbe]
+        + rng.normal(0, 1.0, n_samples)
+    )
+    metadata_df["photosynthesis_efficiency_index"] = photosynthesis_index
+    metadata_df["zinc_homeostasis_index"] = zinc_homeostasis_index
+
     return ProjectData(
         genotype=genotype_df,
         expression=expression_df,

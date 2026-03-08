@@ -17,6 +17,7 @@ Streamlit project for PhD interview discussions around:
 - `Meta-Biome Integration`: species abundance and host-microbiome links
 - `Lab Fit and Pain Points`: explicit contribution plan for PhD lab fit
 - `Supervisor Alignment`: bio/profile links and direct fit to supervision goals
+- `Workflow Upload/Download`: upload your own matrix bundle and export full procedure outputs
 - `Methods`: reproducibility and project-fit notes
 
 ## Local Run

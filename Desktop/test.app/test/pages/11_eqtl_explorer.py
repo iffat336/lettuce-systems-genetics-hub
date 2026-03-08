@@ -9,18 +9,8 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.lettuce_project.core import generate_synthetic_multiomics, run_eqtl_scan
-
-
-@st.cache_data
-def load_data(seed: int):
-    return generate_synthetic_multiomics(seed=seed)
-
-
-@st.cache_data
-def compute_scan(seed: int, min_abs_effect: float):
-    data = generate_synthetic_multiomics(seed=seed)
-    return run_eqtl_scan(data.genotype, data.expression, min_abs_effect=min_abs_effect)
+from src.lettuce_project.core import run_eqtl_scan
+from src.lettuce_project.workflow_io import get_active_or_synthetic
 
 
 st.title("eQTL Explorer")
@@ -31,8 +21,9 @@ with st.sidebar:
     min_abs_effect = st.slider("Min absolute effect", 0.01, 0.25, 0.05, 0.01)
     top_n = st.slider("Top hits shown", 10, 250, 40, 10)
 
-data = load_data(seed)
-results = compute_scan(seed, min_abs_effect)
+data, source = get_active_or_synthetic(seed=seed)
+st.info(f"Active data source: {source}")
+results = run_eqtl_scan(data.genotype, data.expression, min_abs_effect=min_abs_effect)
 
 if results.empty:
     st.warning("No associations found at the chosen effect-size threshold.")

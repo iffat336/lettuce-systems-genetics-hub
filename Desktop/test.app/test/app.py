@@ -22,12 +22,14 @@ if hasattr(st, "navigation"):
     methods = st.Page("pages/14_methods_reproducibility.py", title="Methods", icon=":material/lab_profile:")
     fit = st.Page("pages/17_lab_fit_pain_points.py", title="Lab Fit and Pain Points", icon=":material/handshake:")
     supervisors = st.Page("pages/18_supervisor_alignment.py", title="Supervisor Alignment", icon=":material/groups:")
+    workflow = st.Page("pages/19_workflow_upload_download.py", title="Workflow Upload/Download", icon=":material/upload_file:")
 
     navigation = st.navigation(
         {
             "Research Scope": [overview],
             "Analysis Modules": [eqtl, network, ai, gxe, microbiome],
             "Project Fit": [methods, fit, supervisors],
+            "Data Exchange": [workflow],
         }
     )
     navigation.run()

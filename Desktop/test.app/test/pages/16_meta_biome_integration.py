@@ -10,17 +10,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.lettuce_project.core import (
     build_species_cooccurrence_edges,
-    generate_synthetic_multiomics,
     host_microbiome_links,
 )
-
-
-@st.cache_data
-def load_data(seed: int, coocc_threshold: float, top_links: int):
-    data = generate_synthetic_multiomics(seed=seed)
-    edges = build_species_cooccurrence_edges(data.microbiome, threshold=coocc_threshold)
-    links = host_microbiome_links(data.expression, data.microbiome, top_n=top_links)
-    return data, edges, links
+from src.lettuce_project.workflow_io import get_active_or_synthetic
 
 
 st.title("Meta-Biome Integration")
@@ -31,7 +23,10 @@ with st.sidebar:
     coocc_threshold = st.slider("Species co-occurrence threshold", 0.20, 0.80, 0.35, 0.05)
     top_links = st.slider("Top host-microbe links", 20, 120, 50, 10)
 
-data, edges, links = load_data(seed, coocc_threshold, top_links)
+data, source = get_active_or_synthetic(seed=seed)
+st.info(f"Active data source: {source}")
+edges = build_species_cooccurrence_edges(data.microbiome, threshold=coocc_threshold)
+links = host_microbiome_links(data.expression, data.microbiome, top_n=top_links)
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Microbial species", data.microbiome.shape[1])

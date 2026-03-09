@@ -10,7 +10,13 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.lettuce_project.core import run_eqtl_scan
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.workflow_io import (
+    build_procedure_bundle,
+    clear_active_project_data,
+    get_active_or_synthetic,
+    parse_uploaded_bundle,
+    set_active_project_data,
+)
 
 
 st.title("eQTL Explorer")
@@ -20,9 +26,29 @@ with st.sidebar:
     seed = st.number_input("Random seed", min_value=1, max_value=9999, value=42, step=1)
     min_abs_effect = st.slider("Min absolute effect", 0.01, 0.25, 0.05, 0.01)
     top_n = st.slider("Top hits shown", 10, 250, 40, 10)
+    st.markdown("---")
+    st.caption("Quick upload (works even when this page is opened directly)")
+    quick_upload = st.file_uploader("Upload dataset bundle (.zip)", type=["zip"], key="eqtl_quick_upload")
+    if quick_upload is not None:
+        try:
+            parsed = parse_uploaded_bundle(quick_upload.getvalue())
+            set_active_project_data(parsed, f"Uploaded: {quick_upload.name}")
+            st.success("Uploaded data activated.")
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Upload failed: {exc}")
+    if st.button("Use synthetic data", key="eqtl_reset_data"):
+        clear_active_project_data()
+        st.rerun()
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.download_button(
+    "Download whole procedure (.zip)",
+    data=build_procedure_bundle(data, seed=seed),
+    file_name="lettuce_systems_genetics_workflow.zip",
+    mime="application/zip",
+)
 results = run_eqtl_scan(data.genotype, data.expression, min_abs_effect=min_abs_effect)
 
 if results.empty:

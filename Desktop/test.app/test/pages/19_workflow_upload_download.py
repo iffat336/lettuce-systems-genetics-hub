@@ -52,14 +52,19 @@ st.markdown(
     "This export includes all input tables and all computed outputs (eQTL, GxE stability, "
     "network edges, host-microbiome links, AI metrics/importances)."
 )
-bundle_bytes = build_procedure_bundle(data=data, seed=seed)
-st.download_button(
-    label="Download whole procedure (.zip)",
-    data=bundle_bytes,
-    file_name="lettuce_systems_genetics_workflow.zip",
-    mime="application/zip",
-    use_container_width=True,
-)
+if st.button("Prepare whole procedure package", use_container_width=True):
+    with st.spinner("Preparing package..."):
+        st.session_state["workflow_bundle_bytes"] = build_procedure_bundle(data=data, seed=seed)
+    st.success("Package is ready.")
+
+if "workflow_bundle_bytes" in st.session_state:
+    st.download_button(
+        label="Download whole procedure (.zip)",
+        data=st.session_state["workflow_bundle_bytes"],
+        file_name="lettuce_systems_genetics_workflow.zip",
+        mime="application/zip",
+        use_container_width=True,
+    )
 
 st.subheader("Current data snapshot")
 c1, c2, c3, c4 = st.columns(4)

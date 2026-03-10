@@ -43,12 +43,18 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
-st.download_button(
-    "Download whole procedure (.zip)",
-    data=build_procedure_bundle(data, seed=seed),
-    file_name="lettuce_systems_genetics_workflow.zip",
-    mime="application/zip",
-)
+if st.button("Prepare whole procedure package", key="eqtl_prepare_bundle"):
+    with st.spinner("Preparing package..."):
+        st.session_state["eqtl_bundle_bytes"] = build_procedure_bundle(data, seed=seed)
+    st.success("Package is ready.")
+
+if "eqtl_bundle_bytes" in st.session_state:
+    st.download_button(
+        "Download whole procedure (.zip)",
+        data=st.session_state["eqtl_bundle_bytes"],
+        file_name="lettuce_systems_genetics_workflow.zip",
+        mime="application/zip",
+    )
 results = run_eqtl_scan(data.genotype, data.expression, min_abs_effect=min_abs_effect)
 
 if results.empty:

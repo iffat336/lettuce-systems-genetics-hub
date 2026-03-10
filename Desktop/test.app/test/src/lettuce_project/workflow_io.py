@@ -113,12 +113,16 @@ def set_active_project_data(data: ProjectData, source_label: str) -> None:
     """Store active data in session state."""
     st.session_state[SESSION_DATA_KEY] = data
     st.session_state[SESSION_SOURCE_KEY] = source_label
+    st.session_state.pop("eqtl_bundle_bytes", None)
+    st.session_state.pop("workflow_bundle_bytes", None)
 
 
 def clear_active_project_data() -> None:
     """Switch app back to synthetic generator mode."""
     st.session_state.pop(SESSION_DATA_KEY, None)
     st.session_state.pop(SESSION_SOURCE_KEY, None)
+    st.session_state.pop("eqtl_bundle_bytes", None)
+    st.session_state.pop("workflow_bundle_bytes", None)
 
 
 def get_active_or_synthetic(seed: int) -> tuple[ProjectData, str]:

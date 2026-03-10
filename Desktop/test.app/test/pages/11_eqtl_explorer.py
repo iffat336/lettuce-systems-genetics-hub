@@ -13,6 +13,7 @@ from src.lettuce_project.core import run_eqtl_scan
 from src.lettuce_project.workflow_io import (
     build_procedure_bundle,
     clear_active_project_data,
+    get_data_mode_label,
     get_active_or_synthetic,
     parse_uploaded_bundle,
     set_active_project_data,
@@ -43,6 +44,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 if st.button("Prepare whole procedure package", key="eqtl_prepare_bundle"):
     with st.spinner("Preparing package..."):
         st.session_state["eqtl_bundle_bytes"] = build_procedure_bundle(data, seed=seed)

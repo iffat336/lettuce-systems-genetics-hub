@@ -12,7 +12,7 @@ from src.lettuce_project.core import (
     build_coexpression_edges,
     summarize_network,
 )
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.workflow_io import get_active_or_synthetic, get_data_mode_label
 
 
 st.title("Network Biology")
@@ -25,6 +25,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 edges = build_coexpression_edges(data.expression, threshold=threshold)
 degree_table = summarize_network(edges, data.expression.columns.tolist())
 genes = data.expression.columns.tolist()

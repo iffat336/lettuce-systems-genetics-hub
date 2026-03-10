@@ -7,8 +7,10 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.lettuce_project.workflow_io import (
+    build_key_findings_summary,
     build_procedure_bundle,
     clear_active_project_data,
+    get_data_mode_label,
     get_active_or_synthetic,
     parse_uploaded_bundle,
     set_active_project_data,
@@ -22,6 +24,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 
 st.subheader("1) Upload full input bundle")
 st.markdown(
@@ -63,6 +66,31 @@ if "workflow_bundle_bytes" in st.session_state:
         data=st.session_state["workflow_bundle_bytes"],
         file_name="lettuce_systems_genetics_workflow.zip",
         mime="application/zip",
+        use_container_width=True,
+    )
+
+st.subheader("3) Export compact key findings")
+if st.button("Prepare key findings summary", use_container_width=True):
+    with st.spinner("Summarizing findings..."):
+        summary_md, summary_table = build_key_findings_summary(data=data, seed=seed)
+        st.session_state["findings_md"] = summary_md
+        st.session_state["findings_csv"] = summary_table.to_csv(index=False)
+    st.success("Key findings summary is ready.")
+
+if "findings_md" in st.session_state:
+    c1, c2 = st.columns(2)
+    c1.download_button(
+        "Download key findings (.md)",
+        data=st.session_state["findings_md"],
+        file_name="key_findings_summary.md",
+        mime="text/markdown",
+        use_container_width=True,
+    )
+    c2.download_button(
+        "Download key findings (.csv)",
+        data=st.session_state["findings_csv"],
+        file_name="key_findings_summary.csv",
+        mime="text/csv",
         use_container_width=True,
     )
 

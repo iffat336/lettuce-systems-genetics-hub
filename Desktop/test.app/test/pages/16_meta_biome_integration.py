@@ -12,7 +12,7 @@ from src.lettuce_project.core import (
     build_species_cooccurrence_edges,
     host_microbiome_links,
 )
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.workflow_io import get_active_or_synthetic, get_data_mode_label
 
 
 st.title("Meta-Biome Integration")
@@ -25,6 +25,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 edges = build_species_cooccurrence_edges(data.microbiome, threshold=coocc_threshold)
 links = host_microbiome_links(data.expression, data.microbiome, top_n=top_links)
 

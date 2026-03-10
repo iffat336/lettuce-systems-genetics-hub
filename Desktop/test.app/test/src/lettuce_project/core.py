@@ -6,9 +6,11 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.base import clone
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold, cross_val_score, train_test_split
 
 
 @dataclass(frozen=True)
@@ -312,3 +314,159 @@ def host_microbiome_links(
         return pd.DataFrame(columns=["gene", "species", "corr", "abs_corr"])
     out = pd.DataFrame(pairs).sort_values("abs_corr", ascending=False).head(top_n).reset_index(drop=True)
     return out
+
+
+def benchmark_trait_models(
+    expression: pd.DataFrame,
+    target: pd.Series,
+    seed: int = 42,
+    n_splits: int = 5,
+) -> pd.DataFrame:
+    """Compare baseline models with CV mean/std for R2 and MAE."""
+    cv = KFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    models = {
+        "RandomForest": RandomForestRegressor(
+            n_estimators=300,
+            max_depth=8,
+            min_samples_leaf=3,
+            random_state=seed,
+        ),
+        "Ridge": Ridge(alpha=1.0),
+        "GradientBoosting": GradientBoostingRegressor(random_state=seed),
+    }
+
+    rows = []
+    for model_name, model in models.items():
+        r2 = cross_val_score(model, expression, target, cv=cv, scoring="r2")
+        mae = -cross_val_score(model, expression, target, cv=cv, scoring="neg_mean_absolute_error")
+        rows.append(
+            {
+                "model": model_name,
+                "cv_r2_mean": float(np.mean(r2)),
+                "cv_r2_std": float(np.std(r2)),
+                "cv_mae_mean": float(np.mean(mae)),
+                "cv_mae_std": float(np.std(mae)),
+            }
+        )
+    return pd.DataFrame(rows).sort_values("cv_r2_mean", ascending=False).reset_index(drop=True)
+
+
+def _bootstrap_ci(values: np.ndarray, seed: int = 42, n_boot: int = 500) -> tuple[float, float]:
+    """Bootstrap 95% CI from a metric vector."""
+    rng = np.random.default_rng(seed)
+    if len(values) == 0:
+        return float("nan"), float("nan")
+    draws = []
+    for _ in range(n_boot):
+        sample = rng.choice(values, size=len(values), replace=True)
+        draws.append(float(np.mean(sample)))
+    lo, hi = np.percentile(draws, [2.5, 97.5])
+    return float(lo), float(hi)
+
+
+def evaluate_model_robustness(
+    expression: pd.DataFrame,
+    target: pd.Series,
+    seed: int = 42,
+    n_splits: int = 5,
+    permutations: int = 40,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, float | str]]:
+    """Return model comparison, permutation null distribution, and robustness summary."""
+    benchmark = benchmark_trait_models(expression, target, seed=seed, n_splits=n_splits)
+    best_model_name = str(benchmark.iloc[0]["model"])
+
+    model_map = {
+        "RandomForest": RandomForestRegressor(
+            n_estimators=220,
+            max_depth=8,
+            min_samples_leaf=3,
+            random_state=seed,
+        ),
+        "Ridge": Ridge(alpha=1.0),
+        "GradientBoosting": GradientBoostingRegressor(random_state=seed),
+    }
+    best_model = model_map[best_model_name]
+    cv = KFold(n_splits=n_splits, shuffle=True, random_state=seed)
+
+    real_r2 = cross_val_score(best_model, expression, target, cv=cv, scoring="r2")
+    real_mae = -cross_val_score(best_model, expression, target, cv=cv, scoring="neg_mean_absolute_error")
+    r2_ci_low, r2_ci_high = _bootstrap_ci(real_r2, seed=seed)
+
+    rng = np.random.default_rng(seed + 17)
+    perm_scores = []
+    y = target.to_numpy()
+    for _ in range(permutations):
+        perm_y = rng.permutation(y)
+        perm_r2 = cross_val_score(clone(best_model), expression, perm_y, cv=cv, scoring="r2")
+        perm_scores.append(float(np.mean(perm_r2)))
+    perm_df = pd.DataFrame({"perm_cv_r2_mean": perm_scores})
+
+    actual_score = float(np.mean(real_r2))
+    p_value = float((np.sum(perm_df["perm_cv_r2_mean"] >= actual_score) + 1) / (len(perm_df) + 1))
+    summary = {
+        "best_model": best_model_name,
+        "cv_r2_mean": actual_score,
+        "cv_r2_ci_low": r2_ci_low,
+        "cv_r2_ci_high": r2_ci_high,
+        "cv_mae_mean": float(np.mean(real_mae)),
+        "permutation_p_value": p_value,
+    }
+    return benchmark, perm_df, summary
+
+
+def build_candidate_validation_plan(
+    genotype: pd.DataFrame,
+    expression: pd.DataFrame,
+    metadata: pd.DataFrame,
+    seed: int = 42,
+    target_trait: str = "stress_tolerance_index",
+    top_n_genes: int = 8,
+) -> pd.DataFrame:
+    """Create a practical candidate-to-validation table for interview discussion."""
+    if target_trait not in metadata.columns:
+        return pd.DataFrame(columns=["gene", "ai_rank", "priority_score", "recommended_validation"])
+
+    _, importances, _ = train_trait_model(expression, metadata[target_trait], seed=seed)
+    eqtl = run_eqtl_scan(genotype, expression, min_abs_effect=0.05)
+    env = run_environment_eqtl_scan(genotype, expression, metadata)
+    stability = summarize_eqtl_stability(env)
+
+    top_genes = importances.head(top_n_genes).copy().reset_index(drop=True)
+    top_genes["ai_rank"] = np.arange(1, len(top_genes) + 1)
+
+    records = []
+    for _, row in top_genes.iterrows():
+        gene = row["gene"]
+        ai_importance = float(row["importance"])
+        ai_rank = int(row["ai_rank"])
+
+        gene_eqtl = eqtl[eqtl["gene"] == gene].sort_values("p_value")
+        has_eqtl = int(not gene_eqtl.empty)
+        best_snp = str(gene_eqtl.iloc[0]["snp"]) if has_eqtl else "n/a"
+        best_p = float(gene_eqtl.iloc[0]["p_value"]) if has_eqtl else 1.0
+
+        stable_hits = stability[stability["gene"] == gene]
+        habitats_detected = int(stable_hits["habitats_detected"].max()) if not stable_hits.empty else 0
+
+        priority = ai_importance + (0.15 if has_eqtl else 0.0) + (0.10 if habitats_detected >= 2 else 0.0)
+        if has_eqtl and habitats_detected >= 2:
+            rec = "qPCR across habitats + marker validation for best SNP"
+        elif has_eqtl:
+            rec = "marker validation under matched habitat + expression profiling"
+        else:
+            rec = "expression perturbation test and network-context validation"
+
+        records.append(
+            {
+                "gene": gene,
+                "ai_rank": ai_rank,
+                "ai_importance": ai_importance,
+                "best_snp": best_snp,
+                "best_eqtl_p": best_p,
+                "habitats_detected": habitats_detected,
+                "priority_score": priority,
+                "recommended_validation": rec,
+            }
+        )
+
+    return pd.DataFrame(records).sort_values("priority_score", ascending=False).reset_index(drop=True)

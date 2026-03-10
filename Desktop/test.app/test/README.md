@@ -15,6 +15,8 @@ Streamlit project for PhD interview discussions around:
 - `AI Trait Predictor`: baseline model for stress tolerance
 - `GxE Systems Genetics`: environment-specific regulatory effects
 - `Meta-Biome Integration`: species abundance and host-microbiome links
+- `Model Robustness`: CV benchmarking, bootstrap CI, and permutation diagnostics
+- `Candidate Validation Plan`: prioritized genes with practical wet-lab follow-up plan
 - `Lab Fit and Pain Points`: explicit contribution plan for PhD lab fit
 - `Supervisor Alignment`: bio/profile links and direct fit to supervision goals
 - `Workflow Upload/Download`: upload your own matrix bundle and export full procedure outputs

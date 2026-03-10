@@ -7,8 +7,8 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.lettuce_project.core import train_trait_model
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.core import benchmark_trait_models, train_trait_model
+from src.lettuce_project.workflow_io import get_active_or_synthetic, get_data_mode_label
 
 
 st.title("AI Trait Predictor")
@@ -20,6 +20,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 
 target_options = [
     col
@@ -36,10 +37,14 @@ if not target_options:
 
 target = st.selectbox("Target trait", target_options, index=0)
 _, importances, metrics = train_trait_model(data.expression, data.metadata[target], seed=seed)
+benchmark = benchmark_trait_models(data.expression, data.metadata[target], seed=seed, n_splits=5)
 
 c1, c2 = st.columns(2)
 c1.metric("Test R2", f"{metrics['r2']:.3f}")
 c2.metric("Test MAE", f"{metrics['mae']:.3f}")
+
+st.subheader("Model Comparison (5-fold CV)")
+st.dataframe(benchmark, use_container_width=True, hide_index=True)
 
 st.subheader("Feature Importance")
 top_imp = importances.head(top_features)

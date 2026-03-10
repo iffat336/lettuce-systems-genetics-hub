@@ -10,7 +10,9 @@ import streamlit as st
 
 from src.lettuce_project.core import (
     ProjectData,
+    benchmark_trait_models,
     build_coexpression_edges,
+    build_candidate_validation_plan,
     build_species_cooccurrence_edges,
     generate_synthetic_multiomics,
     host_microbiome_links,
@@ -115,6 +117,8 @@ def set_active_project_data(data: ProjectData, source_label: str) -> None:
     st.session_state[SESSION_SOURCE_KEY] = source_label
     st.session_state.pop("eqtl_bundle_bytes", None)
     st.session_state.pop("workflow_bundle_bytes", None)
+    st.session_state.pop("findings_md", None)
+    st.session_state.pop("findings_csv", None)
 
 
 def clear_active_project_data() -> None:
@@ -123,6 +127,8 @@ def clear_active_project_data() -> None:
     st.session_state.pop(SESSION_SOURCE_KEY, None)
     st.session_state.pop("eqtl_bundle_bytes", None)
     st.session_state.pop("workflow_bundle_bytes", None)
+    st.session_state.pop("findings_md", None)
+    st.session_state.pop("findings_csv", None)
 
 
 def get_active_or_synthetic(seed: int) -> tuple[ProjectData, str]:
@@ -131,6 +137,11 @@ def get_active_or_synthetic(seed: int) -> tuple[ProjectData, str]:
         source = st.session_state.get(SESSION_SOURCE_KEY, "Uploaded bundle")
         return st.session_state[SESSION_DATA_KEY], str(source)
     return generate_synthetic_multiomics(seed=seed), f"Synthetic dataset (seed={seed})"
+
+
+def get_data_mode_label(source: str) -> str:
+    """Return a plain label for current mode."""
+    return "Real data mode" if source.lower().startswith("uploaded:") else "Synthetic demo mode"
 
 
 def _write_df(zip_file: zipfile.ZipFile, name: str, df: pd.DataFrame) -> None:
@@ -162,6 +173,18 @@ def build_procedure_bundle(data: ProjectData, seed: int = 42) -> bytes:
         ai_rows.append({"target": target, "r2": metrics["r2"], "mae": metrics["mae"]})
         ai_tables[target] = importances
     ai_metrics = pd.DataFrame(ai_rows)
+    findings_md, findings_table = build_key_findings_summary(data=data, seed=seed)
+    target_trait = "stress_tolerance_index"
+    if target_trait not in data.metadata.columns:
+        target_trait = ai_metrics["target"].iloc[0] if not ai_metrics.empty else "stress_tolerance_index"
+    validation_plan = build_candidate_validation_plan(
+        data.genotype,
+        data.expression,
+        data.metadata,
+        seed=seed,
+        target_trait=target_trait,
+        top_n_genes=10,
+    )
 
     out = io.BytesIO()
     with zipfile.ZipFile(out, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -181,8 +204,15 @@ def build_procedure_bundle(data: ProjectData, seed: int = 42) -> bytes:
         _write_df(zf, "outputs/species_cooccurrence_edges.csv", microbe_edges)
         _write_df(zf, "outputs/host_microbiome_links.csv", host_microbe)
         _write_df(zf, "outputs/ai_metrics.csv", ai_metrics)
+        _write_df(zf, "outputs/key_findings_summary.csv", findings_table)
+        _write_df(zf, "outputs/candidate_validation_plan.csv", validation_plan)
         for target, table in ai_tables.items():
             _write_df(zf, f"outputs/ai_importance_{target}.csv", table)
+            _write_df(
+                zf,
+                f"outputs/model_benchmark_{target}.csv",
+                benchmark_trait_models(data.expression, data.metadata[target], seed=seed, n_splits=5),
+            )
 
         created = datetime.now(timezone.utc).isoformat()
         readme = f"""# Workflow Procedure Export
@@ -202,6 +232,52 @@ Microbial species: {data.microbiome.shape[1]}
 - This package is designed for reproducible review, interview walkthrough, and handoff.
 """
         zf.writestr("README_procedure.md", readme.encode("utf-8"))
+        zf.writestr("KEY_FINDINGS.md", findings_md.encode("utf-8"))
 
     out.seek(0)
     return out.getvalue()
+
+
+def build_key_findings_summary(data: ProjectData, seed: int = 42) -> tuple[str, pd.DataFrame]:
+    """Build compact findings summary for interview export."""
+    eqtl = run_eqtl_scan(data.genotype, data.expression, min_abs_effect=0.05)
+    env = run_environment_eqtl_scan(data.genotype, data.expression, data.metadata)
+    stability = summarize_eqtl_stability(env)
+    net = build_coexpression_edges(data.expression, threshold=0.65)
+    host = host_microbiome_links(data.expression, data.microbiome, top_n=40)
+
+    significant_eqtl = int((eqtl["fdr"] < 0.05).sum()) if not eqtl.empty else 0
+    cross_habitat = int((stability["habitats_detected"] >= 2).sum()) if not stability.empty else 0
+    top_hub_degree = int(summarize_network(net, data.expression.columns.tolist())["degree"].max()) if not net.empty else 0
+    top_host_microbe_corr = float(host["abs_corr"].max()) if not host.empty else 0.0
+
+    metrics = pd.DataFrame(
+        [
+            {"metric": "samples", "value": int(data.genotype.shape[0])},
+            {"metric": "snps", "value": int(data.genotype.shape[1])},
+            {"metric": "genes", "value": int(data.expression.shape[1])},
+            {"metric": "microbial_species", "value": int(data.microbiome.shape[1])},
+            {"metric": "significant_eqtl_fdr_lt_0.05", "value": significant_eqtl},
+            {"metric": "cross_habitat_regulators", "value": cross_habitat},
+            {"metric": "top_hub_degree", "value": top_hub_degree},
+            {"metric": "top_host_microbe_abs_corr", "value": round(top_host_microbe_corr, 4)},
+        ]
+    )
+
+    created = datetime.now(timezone.utc).isoformat()
+    markdown = f"""# Key Findings Summary
+
+Created (UTC): {created}
+
+- Samples: {data.genotype.shape[0]}
+- SNPs: {data.genotype.shape[1]}
+- Genes: {data.expression.shape[1]}
+- Microbial species: {data.microbiome.shape[1]}
+- Significant eQTLs (FDR < 0.05): {significant_eqtl}
+- Cross-habitat regulators: {cross_habitat}
+- Top network hub degree: {top_hub_degree}
+- Strongest host-microbiome |corr|: {top_host_microbe_corr:.3f}
+
+This summary is intended for rapid PhD collaboration discussion and interview framing.
+"""
+    return markdown, metrics

@@ -6,7 +6,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.workflow_io import get_active_or_synthetic, get_data_mode_label
 
 
 st.title("Lettuce Systems Genetics Hub")
@@ -18,6 +18,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Samples", data.genotype.shape[0])

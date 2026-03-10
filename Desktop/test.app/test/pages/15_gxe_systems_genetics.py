@@ -11,7 +11,7 @@ from src.lettuce_project.core import (
     run_environment_eqtl_scan,
     summarize_eqtl_stability,
 )
-from src.lettuce_project.workflow_io import get_active_or_synthetic
+from src.lettuce_project.workflow_io import get_active_or_synthetic, get_data_mode_label
 
 
 st.title("GxE Systems Genetics")
@@ -23,6 +23,7 @@ with st.sidebar:
 
 data, source = get_active_or_synthetic(seed=seed)
 st.info(f"Active data source: {source}")
+st.caption(f"Mode: {get_data_mode_label(source)}")
 env_eqtl = run_environment_eqtl_scan(data.genotype, data.expression, data.metadata)
 stability = summarize_eqtl_stability(env_eqtl)
 

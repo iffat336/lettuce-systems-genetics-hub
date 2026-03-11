@@ -10,19 +10,29 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import SEED_TYPES, FEATURE_RANGES, COLOR_PRIMARY, COLOR_WARNING, COLOR_DANGER
-from src.utils import check_model_available, get_status_label, make_transparent_plotly_layout
+from src.utils import (
+    check_model_available,
+    get_status_label,
+    init_session_state,
+    make_transparent_plotly_layout,
+)
 from src.seed_science import viability_curve, harrington_hundred_rule
 
+init_session_state()
 model = check_model_available()
 
 # ── Sidebar Controls ──────────────────────────────────────────────
 st.sidebar.title("🔬 Research Controls")
 
+seed_keys = list(SEED_TYPES.keys())
+selected_seed = st.session_state.selected_seed_type
+seed_index = seed_keys.index(selected_seed) if selected_seed in seed_keys else 0
+
 seed_type = st.sidebar.selectbox(
     "Seed Type",
-    list(SEED_TYPES.keys()),
+    seed_keys,
     format_func=lambda x: SEED_TYPES[x]["name"],
-    index=list(SEED_TYPES.keys()).index(st.session_state.selected_seed_type),
+    index=seed_index,
     help="Each seed type has unique degradation characteristics and Ellis-Roberts viability constants.",
 )
 st.session_state.selected_seed_type = seed_type

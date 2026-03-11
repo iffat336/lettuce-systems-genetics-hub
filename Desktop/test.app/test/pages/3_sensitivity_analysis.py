@@ -10,19 +10,24 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import SEED_TYPES, FEATURE_RANGES, NUMERICAL_FEATURES, COLOR_PRIMARY
-from src.utils import check_model_available, make_transparent_plotly_layout
+from src.utils import check_model_available, init_session_state, make_transparent_plotly_layout
 
+init_session_state()
 model = check_model_available()
 
 st.title("🔬 Sensitivity Analysis")
 st.markdown("Understand how each input parameter influences predicted stability.")
 
 # ── Controls ──────────────────────────────────────────────────────
+seed_keys = list(SEED_TYPES.keys())
+selected_seed = st.session_state.selected_seed_type
+seed_index = seed_keys.index(selected_seed) if selected_seed in seed_keys else 0
+
 seed_type = st.sidebar.selectbox(
     "Seed Type",
-    list(SEED_TYPES.keys()),
+    seed_keys,
     format_func=lambda x: SEED_TYPES[x]["name"],
-    index=list(SEED_TYPES.keys()).index(st.session_state.selected_seed_type),
+    index=seed_index,
     key="sa_seed",
 )
 

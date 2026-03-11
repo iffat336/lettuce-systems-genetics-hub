@@ -45,6 +45,10 @@ c2.metric("Test MAE", f"{metrics['mae']:.3f}")
 
 st.subheader("Model Comparison (5-fold CV)")
 st.dataframe(benchmark, use_container_width=True, hide_index=True)
+st.caption(
+    "Comparison interpretation: prefer higher CV R2 and lower CV MAE. "
+    "Small variance across folds suggests more stable performance."
+)
 
 st.subheader("Feature Importance")
 top_imp = importances.head(top_features)
@@ -57,6 +61,10 @@ fig = px.bar(
 )
 fig.update_layout(height=420, yaxis=dict(categoryorder="total ascending"))
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Importance interpretation: top genes contribute most to prediction. "
+    "Use these as priority candidates for eQTL and validation modules."
+)
 
 st.dataframe(importances, use_container_width=True)
 

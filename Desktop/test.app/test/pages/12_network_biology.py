@@ -41,6 +41,10 @@ if edges.empty:
 
 st.subheader("Top Hub Genes")
 st.dataframe(degree_table.head(top_hubs), use_container_width=True)
+st.caption(
+    "Hub interpretation: genes with higher degree connect to more partners and may act as key "
+    "regulatory coordinators in the network."
+)
 
 # Circular network layout for lightweight visualization without extra dependencies.
 gene_to_idx = {g: i for i, g in enumerate(genes)}
@@ -89,6 +93,14 @@ fig.update_layout(
     yaxis=dict(visible=False),
 )
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Network interpretation: larger/darker nodes have higher connectivity. "
+    "Dense local links suggest co-expression modules worth biological follow-up."
+)
 
 st.subheader("Edge List")
 st.dataframe(edges.sort_values("weight", key=np.abs, ascending=False), use_container_width=True)
+st.caption(
+    "Edge table: absolute weight close to 1 means stronger co-expression. "
+    "Use top edges to nominate module-level hypotheses."
+)

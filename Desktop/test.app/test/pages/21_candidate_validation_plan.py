@@ -50,6 +50,10 @@ if plan.empty:
 
 st.subheader("Prioritized validation table")
 st.dataframe(plan, use_container_width=True, hide_index=True)
+st.caption(
+    "Table interpretation: higher priority_score reflects combined AI importance plus genetics evidence. "
+    "Use recommended_validation to plan immediate lab follow-up."
+)
 
 st.subheader("Priority ranking view")
 fig = px.bar(
@@ -62,6 +66,10 @@ fig = px.bar(
 )
 fig.update_layout(height=440)
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Bar interpretation: longer bars are stronger validation priorities. "
+    "Color shows in how many habitats each candidate is detected."
+)
 
 checklist_md = (
     "# Candidate Validation Checklist\n\n"

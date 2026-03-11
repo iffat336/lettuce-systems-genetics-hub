@@ -52,6 +52,10 @@ fig = px.bar(
 )
 fig.update_layout(height=460, xaxis_tickangle=-45)
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Composition interpretation: taller bars mean higher average abundance in that habitat. "
+    "Large habitat shifts suggest environment-sensitive microbial groups."
+)
 
 st.subheader("Top host transcript vs species links")
 if links.empty:
@@ -71,10 +75,18 @@ else:
     scatter.update_layout(height=520)
     st.plotly_chart(scatter, use_container_width=True)
     st.dataframe(links.sort_values("abs_corr", ascending=False), use_container_width=True)
+    st.caption(
+        "Association map: larger circles indicate stronger host-microbe correlation. "
+        "Red/blue colors show positive/negative association direction."
+    )
 
 if not edges.empty:
     st.subheader("Species co-occurrence edge list")
     st.dataframe(edges.sort_values("weight", key=np.abs, ascending=False), use_container_width=True)
+    st.caption(
+        "Co-occurrence table: strong positive/negative weights indicate consistent species coupling or exclusion. "
+        "Use top edges to define candidate ecological modules."
+    )
 
 st.info(
     "Interview framing: this page addresses his near-future goal to integrate "

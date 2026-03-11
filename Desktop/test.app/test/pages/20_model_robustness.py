@@ -58,6 +58,10 @@ st.write(
 
 st.subheader("Model benchmark table")
 st.dataframe(benchmark, use_container_width=True, hide_index=True)
+st.caption(
+    "Benchmark interpretation: consistent fold performance with better mean metrics indicates a stronger baseline. "
+    "Use this to justify model choice before biological interpretation."
+)
 
 st.subheader("Permutation null distribution")
 fig = px.histogram(
@@ -69,6 +73,10 @@ fig = px.histogram(
 fig.add_vline(x=float(summary["cv_r2_mean"]), line_dash="dash", line_color="red")
 fig.update_layout(height=420)
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Permutation interpretation: red line should sit right of the null histogram. "
+    "That indicates learned signal is above chance-level structure."
+)
 
 st.info(
     "PhD collaboration framing: this page demonstrates statistical rigor by checking if performance "

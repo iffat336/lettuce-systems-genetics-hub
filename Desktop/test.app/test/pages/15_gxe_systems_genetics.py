@@ -48,15 +48,27 @@ fig = px.scatter(
 )
 fig.update_layout(height=460)
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "Scatter interpretation: points higher on the y-axis appear in more habitats, indicating stronger cross-environment stability. "
+    "Higher x-values indicate stronger average effect size."
+)
 
 st.subheader("Top stability table")
 st.dataframe(stability.head(top_n), use_container_width=True)
+st.caption(
+    "Stability table: prioritize candidates with high habitats_detected and strong mean_abs_effect. "
+    "These are robust targets for downstream validation."
+)
 
 st.subheader("Environment-level hits")
 habitat_filter = st.selectbox("Filter habitat", sorted(env_eqtl["habitat"].unique()))
 st.dataframe(
     env_eqtl[env_eqtl["habitat"] == habitat_filter].sort_values("p_value").head(60),
     use_container_width=True,
+)
+st.caption(
+    "Habitat view: this table isolates environment-specific signals. "
+    "Compare habitats to identify context-dependent regulators."
 )
 
 st.info(

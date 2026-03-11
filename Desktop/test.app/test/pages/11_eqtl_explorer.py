@@ -85,11 +85,19 @@ fig = px.scatter(
 )
 fig.update_layout(height=480, xaxis_title="Marker", yaxis_title="-log10(p)")
 st.plotly_chart(fig, use_container_width=True)
+st.caption(
+    "How to read: higher points indicate stronger marker-transcript evidence. "
+    "Color shows direction/size of effect, so bright extremes are stronger regulatory candidates."
+)
 
 st.subheader("Top eQTL Table")
 st.dataframe(
     results.head(top_n)[["gene", "snp", "effect_size", "r2", "p_value", "fdr"]],
     use_container_width=True,
+)
+st.caption(
+    "Table interpretation: prioritize rows with low FDR and larger absolute effect sizes. "
+    "These are better candidates for follow-up validation."
 )
 
 selected_gene = st.selectbox("Inspect one gene", data.expression.columns.tolist(), index=0)
@@ -110,3 +118,7 @@ else:
     bar.update_layout(height=420)
     st.plotly_chart(bar, use_container_width=True)
     st.dataframe(gene_hits, use_container_width=True)
+    st.caption(
+        "Gene-level view: bars far from zero suggest stronger regulation by that SNP. "
+        "Low-FDR bars are statistically more reliable."
+    )
